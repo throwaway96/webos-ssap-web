@@ -45,7 +45,12 @@ class ProxyWebSocket {
     this.proxy.contentWindow.postMessage(JSON.stringify({type: 'send', data: data}), '*');
   }
 
-  close() {
-    this.proxy.contentWindow.postMessage(JSON.stringify({type: 'close'}), '*');
+  close() {    
+    if (this.proxy.contentWindow !== null) {
+      console.debug("closing proxy");
+      this.proxy.contentWindow.postMessage(JSON.stringify({type: 'close'}), '*');
+    } else {
+      console.warn("proxy already closed?");
+    }
   }
 }

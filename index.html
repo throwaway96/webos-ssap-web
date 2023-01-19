@@ -9,9 +9,11 @@
 
     .capture {
       height: 80vh;
-      display: block;
-      width: 100%;
+      display: inline-block;
+      width: calc(80vh * 16 / 9);
       position: relative;
+      border: 1px dashed black;
+      margin-bottom: 5pt;
     }
 
     .capture img {
@@ -26,21 +28,98 @@
       max-height: 100%;
     }
 
+    #remote {
+      display: inline-block;
+      vertical-align: top;
+      margin-left: 0.5em;
+    }
+
     .front {
       z-index: 99999;
+    }
+
+    table#keypad {
+      display: inline-table;
+      border: 1px solid black;
+      text-align: center;
+      vertical-align: top;
+    }
+
+    button.keypad {
+      font-family: 'Helvetica Neue', sans-serif;
+      font-weight: bold;
+      font-stretch: narrower;
+    }
+
+    div#request {
+      display: inline-block;
+      border: 1px solid black;
+      padding: 2pt;
+    }
+
+    div#request > p {
+      font-weight: bold;
     }
   </style>
 </head>
 
 <body>
   <div class="topbar">
-    <input type="text" id="ip" placeholder="127.0.0.1" value="127.0.0.1" />
-    <button id="run">run</button>
+    <input type="text" id="ip" placeholder="127.0.0.1" value="" />
+    <button id="connect">connect</button><button id="disconnect" disabled>disconnect</button>
   </div>
   <pre id="log" class="logbar"></pre>
-  <div class="capture">
-  </div>
+  <div class="capture"></div><div id="remote"></div><br>
+  <table id="keypad">
+    <tr>
+      <td></td>
+      <td><button class="keypad" data-key="UP">&#9650;</button></td>
+      <td></td>
+    </tr>
+    <tr>
+      <td><button class="keypad" data-key="LEFT">&#9664;</button></td>
+      <td><button class="keypad" data-key="ENTER">OK</button></td>
+      <td><button class="keypad" data-key="RIGHT">&#9654;</button></td>
+    </tr>
+    <tr>
+      <td><button class="keypad" data-key="BACK">BACK</button></td>
+      <td><button class="keypad" data-key="DOWN">&#9660;</button></td>
+      <td><button class="keypad" data-key="EXIT">EXIT</button></td>
+    </tr>
+    <tr>
+      <td><button class="keypad" data-key="HOME">HOME</button></td>
+      <td><button class="keypad" data-key="MENU">MENU</button></td>
+      <td><button class="keypad" data-key="MYAPPS">APPS</button></td>
+    </tr>
+    <tr>
+      <td><button class="keypad" data-key="IN_START">IN START</button></td>
+      <td><button class="keypad" data-key="EZ_ADJUST">ADJ</button></td>
+      <td></td>
+    </tr>
+    <tr>
+      <td><button class="keypad" data-key="VOLUMEUP">VOL+</button></td>
+      <td><button class="keypad" data-key="MUTE">MUTE</button></td>
+      <td><button class="keypad" data-key="CHANNELUP">CH+</button></td>
+    </tr>
+    <tr>
+      <td><button class="keypad" data-key="VOLUMEDOWN">VOL-</button></td>
+      <td><button class="keypad" disabled>IN STOP</button></td><!-- "IN_STOP" -->
+      <td><button class="keypad" data-key="CHANNELDOWN">CH-</button></td>
+    </tr>
+  </table>
 
+  <div id="request">
+    <p>request</p>
+    <label for="req_endpoint">endpoint:</label>&nbsp;<input type="text" id="req_endpoint" size="100" placeholder="luna://..."><br>
+    <label for="req_payload">payload:</label><br>
+    <textarea id="req_payload" rows="5" cols="100" placeholder="{}">{}</textarea><br>
+    <button id="req_send" disabled>send</button><br>
+
+    <p>response</p>
+    <label for="resp_status">status:</label>&nbsp;<input type="text" id="resp_status" size="50" readonly><br>
+    <label for="resp_payload">payload:</label><br>
+    <textarea id="resp_payload" rows="5" cols="100" readonly></textarea>
+  </div>
 
   <script>
     window.onerror = function (err) {
@@ -49,6 +128,7 @@
   </script>
   <script src="wsproxy.js"></script>
   <script src="client.js"></script>
+  <script src="remote.js"></script>
   <script src="demo.js"></script>
 </body>
 
