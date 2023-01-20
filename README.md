@@ -32,4 +32,4 @@ perform basic remote control (arrow keys, enter = OK, escape = Back, home = Home
 Credits
 -------
 
-Remote UI by simon.
+Remote UI by [simon_34545](https://github.com/Simon34545).
