@@ -10,6 +10,7 @@ function log(msg) {
 }
 
 let client = null;
+let lastImageUri = null;
 
 let inputSocket = null;
 document.addEventListener('keydown', (evt) => {
@@ -267,6 +268,8 @@ connectButton.addEventListener('click', async () => {
         payload: {},
       });
 
+      lastImageUri = res.payload.imageUri;
+
       const oldb = document.querySelector('.capture .back');
       if (oldb) {
         oldb.remove();
@@ -298,3 +301,7 @@ connectButton.addEventListener('click', async () => {
     client = null;
   }
 });
+
+function getLastImageUri() {
+  return lastImageUri;
+}
