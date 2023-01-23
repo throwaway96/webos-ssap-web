@@ -226,69 +226,75 @@ connectButton.addEventListener('click', async () => {
   connectButton.disabled = true;
 
   const target = document.querySelector('#ip').value;
-  try {
-  client = new SSAPClient(target, window.localStorage['client-key-' + target]);
-  log('connecting...');
-  await client.connect();
-  log('registering...');
-  let manifest = defaultAppManifest;
 
   try {
-    manifest = JSON.parse(window.localStorage['ssap-app-manifest']);
-    log("using custom manifest");
-  } catch (err) {}
-  
-  window.localStorage['client-key-' + target] = await client.register(manifest);
+    client = new SSAPClient(target, window.localStorage['client-key-' + target]);
+    log('connecting...');
+    await client.connect();
+    log('registering...');
+    let manifest = defaultAppManifest;
 
-  onSSAPConnect();
+    try {
+      manifest = JSON.parse(window.localStorage['ssap-app-manifest']);
+      log("using custom manifest");
+    } catch (err) {}
+    
+    window.localStorage['client-key-' + target] = await client.register(manifest);
 
-  if (document.querySelector(':focus')) document.querySelector(':focus').blur();
+    onSSAPConnect();
 
-  (async () => {
-    const sock = await client.request({
-      uri: 'ssap://com.webos.service.networkinput/getPointerInputSocket'
-    });
+    if (document.querySelector(':focus')) document.querySelector(':focus').blur();
 
-    inputSocket = new WebSocket(sock.payload.socketPath);
-    inputSocket.onopen = onInputSocketOpen;
-    inputSocket.onerror = (err) => log('input err ' + err.msg);
-    inputSocket.onclose = onInputSocketClose;
-  })();
+    (async () => {
+      const sock = await client.request({
+        uri: 'ssap://com.webos.service.networkinput/getPointerInputSocket'
+      });
 
-  while (true) {
-    if (client === null) {
-      /* disconnected */
-      break;
+      inputSocket = new WebSocket(sock.payload.socketPath);
+      inputSocket.onopen = onInputSocketOpen;
+      inputSocket.onerror = (err) => log('input err ' + err.msg);
+      inputSocket.onclose = onInputSocketClose;
+    })();
+
+    while (true) {
+      if (client === null) {
+        /* disconnected */
+        break;
+      }
+
+      const res = await client.request({
+        uri: 'ssap://tv/executeOneShot',
+        payload: {},
+      });
+
+      const oldb = document.querySelector('.capture .back');
+      if (oldb) {
+        oldb.remove();
+      }
+
+      const oldf = document.querySelector('.capture .front');
+      if (oldf) {
+        oldf.classList.remove('front');
+        oldf.classList.add('back');
+      }
+
+      // This is bad. We do some """double-buffering""" of dynamically-generated
+      // SVG objects in order to bust Chrome's cache for preview image. `imageUri`
+      // here is static for all responses, and doesn't accept any extra query
+      // arguments. This hack seems to solve it on Chrome. (Firefox seems to
+      // update the <img> if hash-part of an URL changes)
+      const newf = document.createElement('object');
+      newf.classList.add('front');
+      newf.setAttribute('type', 'image/svg+xml');
+      newf.setAttribute('data', 'data:image/svg+xml;base64,' + btoa(`<svg preserveAspectRatio="xMinYMin meet" viewBox="0 0 1920 1080" width="1920" height="1080" xmlns="http://www.w3.org/2000/svg"><image width="1920" height="1080" href="${res.payload.imageUri}#${Date.now()}" /></svg>`)); // res.payload.imageUri + '#' + Date.now());
+      document.querySelector('.capture').appendChild(newf);
+
+      await wait(100);
     }
-
-    const res = await client.request({
-      uri: 'ssap://tv/executeOneShot',
-      payload: {},
-    });
-
-    const oldb = document.querySelector('.capture .back');
-    if (oldb) {
-      oldb.remove();
-    }
-
-    const oldf = document.querySelector('.capture .front');
-    if (oldf) {
-      oldf.classList.remove('front');
-      oldf.classList.add('back');
-    }
-
-    // This is bad. We do some """double-buffering""" of dynamically-generated
-    // SVG objects in order to bust Chrome's cache for preview image. `imageUri`
-    // here is static for all responses, and doesn't accept any extra query
-    // arguments. This hack seems to solve it on Chrome. (Firefox seems to
-    // update the <img> if hash-part of an URL changes)
-    const newf = document.createElement('object');
-    newf.classList.add('front');
-    newf.setAttribute('type', 'image/svg+xml');
-    newf.setAttribute('data', 'data:image/svg+xml;base64,' + btoa(`<svg preserveAspectRatio="xMinYMin meet" viewBox="0 0 1920 1080" width="1920" height="1080" xmlns="http://www.w3.org/2000/svg"><image width="1920" height="1080" href="${res.payload.imageUri}#${Date.now()}" /></svg>`)); // res.payload.imageUri + '#' + Date.now());
-    document.querySelector('.capture').appendChild(newf);
-
-    await wait(100);
+  } catch (err) {
+    log('error: ' + err); console.info(err); 
+    onSSAPDisconnect();
+    client.close();
+    client = null;
   }
-  } catch (err) { log('error: ' + err); console.info(err); }
 });
