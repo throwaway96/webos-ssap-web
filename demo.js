@@ -226,7 +226,7 @@ connectButton.addEventListener('click', async () => {
   connectButton.disabled = true;
 
   const target = document.querySelector('#ip').value;
-
+  try {
   client = new SSAPClient(target, window.localStorage['client-key-' + target]);
   log('connecting...');
   await client.connect();
@@ -290,4 +290,5 @@ connectButton.addEventListener('click', async () => {
 
     await wait(100);
   }
+  } catch (err) { log('error: ' + err); console.info(err); }
 });
