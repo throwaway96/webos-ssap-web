@@ -134,7 +134,7 @@ function sendRequest(uri, payload) {
     if (res.type === 'error') {
       statusMsg = 'error: ' + res.error;
     } else if (res.type === 'response') {
-      statusMsg = 'reponse';
+      statusMsg = 'response';
     }
 
     respStatus.value = statusMsg;
