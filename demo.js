@@ -111,11 +111,29 @@ reqDiv.addEventListener('keydown', (evt) => {
 });
 
 
+const reqList = document.getElementById('reqs');
 const reqSend = document.getElementById('req_send');
 const reqEndpoint = document.getElementById('req_endpoint');
 const reqPayload = document.getElementById('req_payload');
 const respStatus = document.getElementById('resp_status');
 const respPayload = document.getElementById('resp_payload');
+
+function reqListHandler(evt) {
+  let sel = reqList.options[reqList.selectedIndex];
+  if (sel.value === 'custom') {
+    reqEndpoint.disabled = false;
+    reqPayload.disabled = false;
+  } else {
+    reqEndpoint.disabled = true;
+    reqPayload.disabled = true;
+
+    reqEndpoint.value = sel.dataset['endpoint'];
+    reqPayload.value = sel.dataset['payload'];
+  }
+}
+
+reqList.addEventListener('change', reqListHandler);
+reqListHandler();
 
 function sendRequest(uri, payload) {
     if (!isSSAPConnected()) {

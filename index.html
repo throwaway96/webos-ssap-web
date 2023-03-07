@@ -109,11 +109,24 @@
   </table>
 
   <div id="request">
+    <div id="custom_request">
     <p>request</p>
-    <label for="req_endpoint">endpoint:</label>&nbsp;<input type="text" id="req_endpoint" size="100" placeholder="luna://..."><br>
+    <select id="reqs">
+      <option value="launch_factorywin_instart"
+        data-endpoint="ssap://com.webos.applicationManager/launch"
+        data-payload="{&quot;id&quot;:&quot;com.webos.app.factorywin&quot;,&quot;params&quot;:{&quot;id&quot;:&quot;executeFactory&quot;,&quot;irKey&quot;:&quot;inStart&quot;}}">
+        launch factorywin (inStart)</option>
+      <option value="launch_factorywin_ezadjust"
+        data-endpoint="ssap://com.webos.applicationManager/launch"
+        data-payload="{&quot;id&quot;:&quot;com.webos.app.factorywin&quot;,&quot;params&quot;:{&quot;id&quot;:&quot;executeFactory&quot;,&quot;irKey&quot;:&quot;ezAdjust&quot;}}">
+        launch factorywin (ezAdjust)</option>
+      <option value="custom">custom</option>
+    </select><br>
+    <label for="req_endpoint">endpoint:</label>&nbsp;<input type="text" id="req_endpoint" size="100" placeholder="luna://..." disabled><br>
     <label for="req_payload">payload:</label><br>
-    <textarea id="req_payload" rows="5" cols="100" placeholder="{}">{}</textarea><br>
+    <textarea id="req_payload" rows="5" cols="100" placeholder="{}" disabled>{}</textarea><br>
     <button id="req_send" disabled>send</button><br>
+
 
     <p>response</p>
     <label for="resp_status">status:</label>&nbsp;<input type="text" id="resp_status" size="50" readonly><br>
