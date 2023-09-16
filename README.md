@@ -22,14 +22,16 @@ mixed content security policies. Alternatively, user can be requested to
 manually approve self-signed certificate used for `wss://:3001` server exposed
 by webOS.
 
-Demo
-----
+License
+-------
 
-Demo app in `index.html` can be used to preview current screen contents and
-perform basic remote control (arrow keys, enter = OK, escape = Back, home = Home)
-
+This software is licensed under the GNU Affero General Public License, version 3
+or later. A copy of the GNU AGPL is included as COPYING.
 
 Credits
 -------
+
+Derived from [webos-ssap-web](https://github.com/Informatic/webos-ssap-web),
+copyright Piotr Dobrowolski.
 
 Remote UI by [simon_34545](https://github.com/Simon34545).
