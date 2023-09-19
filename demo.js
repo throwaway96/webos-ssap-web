@@ -264,9 +264,10 @@ connectButton.addEventListener('click', async () => {
   connectButton.disabled = true;
 
   const target = document.querySelector('#ip').value;
+  const useTLS = document.querySelector('#ssl').checked;
 
   try {
-    client = new SSAPClient(target, window.localStorage['client-key-' + target]);
+    client = new SSAPClient(target, window.localStorage['client-key-' + target], useTLS);
     log('connecting...');
     await client.connect();
     log('registering...');
