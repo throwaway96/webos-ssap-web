@@ -1,5 +1,5 @@
 /*
-Copyright 2022-2023 throwaway96 (https://github.com/throwaway96) 
+Copyright 2022-2023 throwaway96 (https://github.com/throwaway96)
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as
@@ -64,7 +64,7 @@ class ProxyWebSocket {
     this.proxy.contentWindow.postMessage(JSON.stringify({type: 'send', data: data}), '*');
   }
 
-  close() {    
+  close() {
     if (this.proxy.contentWindow !== null) {
       console.debug("closing proxy");
       this.proxy.contentWindow.postMessage(JSON.stringify({type: 'close'}), '*');

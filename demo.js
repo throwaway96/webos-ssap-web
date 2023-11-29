@@ -1,5 +1,5 @@
 /*
-Copyright 2022-2023 throwaway96 (https://github.com/throwaway96) 
+Copyright 2022-2023 throwaway96 (https://github.com/throwaway96)
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as
@@ -164,7 +164,7 @@ function sendRequest(uri, payload) {
 
   client.request({
     uri: uri,
-    payload: payload, 
+    payload: payload,
   }).then((res) => {
     let statusMsg = '???';
 
@@ -277,7 +277,7 @@ connectButton.addEventListener('click', async () => {
       manifest = JSON.parse(window.localStorage['ssap-app-manifest']);
       log("using custom manifest");
     } catch (err) {}
-    
+
     window.localStorage['client-key-' + target] = await client.register(manifest);
 
     onSSAPConnect();
@@ -333,7 +333,7 @@ connectButton.addEventListener('click', async () => {
       await wait(100);
     }
   } catch (err) {
-    log('error: ' + err); console.info(err); 
+    log('error: ' + err); console.info(err);
     onSSAPDisconnect();
     client.close();
     client = null;

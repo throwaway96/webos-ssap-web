@@ -1,5 +1,5 @@
 /*
-Copyright 2022-2023 throwaway96 (https://github.com/throwaway96) 
+Copyright 2022-2023 throwaway96 (https://github.com/throwaway96)
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as
@@ -316,7 +316,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
         x: 27,
         y: 61.5,
         width: 10,
-        height: 9.5,  
+        height: 9.5,
         styles: {
           textAlign: 'center',
           borderTopLeftRadius: '0',
@@ -664,7 +664,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
     ]
   }
 
-  function applyStyle(el, obj) {   
+  function applyStyle(el, obj) {
     if (obj.innerHTML) {
       el.innerHTML = obj.innerHTML;
     }
