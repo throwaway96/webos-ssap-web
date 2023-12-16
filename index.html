@@ -144,6 +144,10 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
         data-endpoint="ssap://com.webos.applicationManager/launch"
         data-payload="{&quot;id&quot;:&quot;com.webos.app.softwareupdate&quot;,&quot;params&quot;:{&quot;mode&quot;:&quot;expert&quot;,&quot;flagUpdate&quot;:true}}">
         launch softwareupdate (expert mode)</option>
+        <option value="get_version_info"
+        data-endpoint="ssap://com.webos.service.update/getCurrentSWInformation" 
+        data-payload="{}">
+        get version info</option>
       <option value="custom">custom</option>
     </select><br>
     <label for="req_endpoint">endpoint:</label>&nbsp;<input type="text" id="req_endpoint" size="100" placeholder="luna://..." disabled><br>
