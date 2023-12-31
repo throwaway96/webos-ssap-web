@@ -3,6 +3,14 @@ ssap-web
 
 A hacky implementation of webOS remote control API on the web.
 
+Instructions
+------------
+
+Save a copy of this repo locally (e.g. by cloning the repo or
+[downloading it as a zip file](https://github.com/throwaway96/webos-ssap-web/archive/refs/heads/master.zip)).
+Then open `index.html` in a web browser. Chrome/Chromium gets the most testing,
+but Firefox should work as well.
+
 How it works
 ------------
 
