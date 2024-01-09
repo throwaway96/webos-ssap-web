@@ -175,21 +175,21 @@ async function waitForPreviewEnable() {
 
 const reqList = document.getElementById('reqs');
 const reqSend = document.getElementById('req_send');
-const reqEndpoint = document.getElementById('req_endpoint');
+const reqUri = document.getElementById('req_uri');
 const reqPayload = document.getElementById('req_payload');
 const respStatus = document.getElementById('resp_status');
 const respPayload = document.getElementById('resp_payload');
 
 function reqListHandler(evt) {
   let sel = reqList.options[reqList.selectedIndex];
-  if (sel.value === 'custom') {
-    reqEndpoint.disabled = false;
+  if ((sel.value === 'custom') || (sel.value === 'private')) {
+    reqUri.disabled = false;
     reqPayload.disabled = false;
   } else {
-    reqEndpoint.disabled = true;
+    reqUri.disabled = true;
     reqPayload.disabled = true;
 
-    reqEndpoint.value = sel.dataset['endpoint'];
+    reqUri.value = sel.dataset['endpoint'];
     reqPayload.value = sel.dataset['payload'];
   }
 }
@@ -197,13 +197,21 @@ function reqListHandler(evt) {
 reqList.addEventListener('change', reqListHandler);
 reqListHandler();
 
+function setResponseStatus(message) {
+  if (typeof message !== 'string') {
+    throw new Error(`setResponseStatus: message must be a string (got ${typeof message})`);
+  }
+
+  respStatus.value = message;
+}
+
 function sendRequest(uri, payload) {
     if (!isSSAPConnected()) {
     console.warn('syncRequest: SSAP not connected');
     return;
   }
 
-  respStatus.value = 'sending...';
+  setResponseStatus('sending...');
 
   client.request({
     uri: uri,
@@ -215,20 +223,133 @@ function sendRequest(uri, payload) {
       statusMsg = 'error: ' + res.error;
     } else if (res.type === 'response') {
       statusMsg = 'response';
+    } else {
+      const msg = `unknown response type: ${res.type}`;
+      setResponseStatus(msg);
+      throw new Error(`sendRequest: ${msg}`);
     }
 
-    respStatus.value = statusMsg;
+    setResponseStatus(statusMsg);
     respPayload.value = JSON.stringify(res.payload);
   }).catch((error) => {
-    throw new Error('sendRequest: error: ' + error);
+    throw new Error(`sendRequest: error: ${error}`);
+  });
+}
+
+async function sendPrivateRequest(uri, payload, manual = false) {
+  if (!isSSAPConnected()) {
+    console.warn('syncRequest: SSAP not connected');
+    return;
+  }
+
+  const createReq = {
+    "message": "hi lol",
+    "type": "confirm",
+    "modal": false,
+    "isSysReq": true,
+    "onclose": {
+      "uri": uri,
+      "params": payload,
+    },
+    "onfail": {
+      "uri": uri,
+      "params": payload,
+    },
+    "buttons": [
+      {
+        "label": "hax",
+        "focus": true,
+        "buttonType": "ok",
+        "onClick": uri,
+        "params": payload,
+      },
+    ],
+  };
+
+  setResponseStatus('sending createAlert...');
+
+  const alertId = await client.request({
+    uri: 'ssap://system.notifications/createAlert',
+    payload: createReq,
+  }).then((res) => {
+    let statusMsg = 'createAlert ???';
+
+    if (res.type === 'error') {
+      const msg = `createAlert error: ${res.error}`;
+      setResponseStatus(msg);
+      respPayload.value = JSON.stringify(res.payload)
+      throw new Error(`sendPrivateRequest: ${msg}`);
+    } else if (res.type === 'response') {
+      statusMsg = 'createAlert response';
+    } else {
+      const msg = `createAlert unknown response type: ${res.type}`;
+      setResponseStatus(msg);
+      respPayload.value = JSON.stringify(res.payload)
+      throw new Error(`sendPrivateRequest: ${msg}`);
+    }
+
+    setResponseStatus(statusMsg);
+
+    const payload = res.payload;
+
+    /* returnValue should always be true, but double check anyway */
+    if (typeof payload.returnValue !== 'boolean') {
+      respPayload.value = JSON.stringify(res.payload);
+      throw new Error('createAlert: returnValue missing/wrong type');
+    } else if (!payload.returnValue) {
+      respPayload.value = JSON.stringify(res.payload);
+      throw new Error('createAlert: returnValue false');
+    }
+
+    const alertId = payload.alertId;
+    if (typeof alertId !== 'string') {
+      throw new Error('createAlert: alertId missing/wrong type');
+    }
+    return alertId;
+  }).catch((error) => {
+    throw new Error('sendPrivateRequest: createAlert error: ' + error);
+  });
+
+  const closeReq = {
+    "alertId": alertId
+  };
+
+  setResponseStatus('sending closeAlert...');
+
+  client.request({
+    uri: 'ssap://system.notifications/closeAlert',
+    payload: closeReq,
+  }).then((res) => {
+    let statusMsg = 'closeAlert ???';
+
+    if (res.type === 'error') {
+      statusMsg = 'closeAlert error: ' + res.error;
+    } else if (res.type === 'response') {
+      statusMsg = 'closeAlert response';
+    } else {
+      const msg = `closeAlert unknown response type: ${res.type}`;
+      setResponseStatus(msg);
+      throw new Error(`sendPrivateRequest: ${msg}`);
+    }
+
+    setResponseStatus(statusMsg);
+    respPayload.value = JSON.stringify(res.payload);
+  }).catch((error) => {
+    throw new Error('sendPrivateRequest: closeAlert error: ' + error);
   });
 }
 
 reqSend.addEventListener('click', (evt) => {
-  const uri = reqEndpoint.value;
+  const uri = reqUri.value;
   const payload = JSON.parse(reqPayload.value);
 
-  sendRequest(uri, payload);
+  let sel = reqList.options[reqList.selectedIndex];
+
+  if (sel.value === 'private') {
+    sendPrivateRequest(uri, payload);
+  } else {
+    sendRequest(uri, payload);
+  }
 });
 
 const ipInput = document.getElementById("ip");
@@ -307,6 +428,12 @@ connectButton.addEventListener('click', async () => {
   connectButton.disabled = true;
 
   const target = document.querySelector('#ip').value;
+
+  if ((typeof target !== 'string') || (target.length < 1)) {
+    alert("target empty");
+    return;
+  }
+
   const useTLS = document.querySelector('#ssl').checked;
 
   try {
