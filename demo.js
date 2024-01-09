@@ -129,6 +129,49 @@ reqDiv.addEventListener('keydown', (evt) => {
   evt.stopPropagation();
 });
 
+/* "pause preview" checkbox */
+const pausePreview = document.getElementById('pause_preview');
+
+/* controls whether preview image should be updated */
+let previewEnabled = false;
+
+/* event fired when previewEnabled goes from false to true */
+const previewEnabledEvent = new Event('previewEnabled');
+
+/*
+ * check the the pausePreview checkbox and dispatch event if it the state has
+ * changed to enabled
+ */
+function updatePreviewEnabled() {
+  const oldPreviewEnabled = previewEnabled;
+
+  previewEnabled = !pausePreview.checked;
+
+  /* only fire on change from disabled to enabled */
+  if (previewEnabled && !oldPreviewEnabled) {
+    pausePreview.dispatchEvent(previewEnabledEvent);
+  }
+}
+
+pausePreview.addEventListener('change', (evt) => updatePreviewEnabled());
+updatePreviewEnabled();
+
+async function waitForPreviewEnable() {
+  console.log(`waitForPreviewEnable starting (${previewEnabled})`);
+
+  while (!previewEnabled) {
+    await new Promise((resolve) => {
+      const listener = () => {
+        pausePreview.removeEventListener('previewEnabled', listener);
+        console.log(`waitForPreviewEnable listener (${previewEnabled})`);
+        resolve();
+      }
+
+      pausePreview.addEventListener('previewEnabled', listener);
+    });
+  }
+  console.log(`waitForPreviewEnable returning (${previewEnabled})`);
+}
 
 const reqList = document.getElementById('reqs');
 const reqSend = document.getElementById('req_send');
@@ -300,6 +343,8 @@ connectButton.addEventListener('click', async () => {
         /* disconnected */
         break;
       }
+
+      await waitForPreviewEnable();
 
       const res = await client.request({
         uri: 'ssap://tv/executeOneShot',
