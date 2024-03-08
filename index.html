@@ -1,5 +1,5 @@
 <!--
-Copyright 2022-2023 throwaway96 (https://github.com/throwaway96)
+Copyright 2022-2024 throwaway96 (https://github.com/throwaway96)
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU Affero General Public License as
@@ -169,10 +169,29 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
       alert('error: ' + JSON.stringify(err) + '\n' + err.fileName + ' ' + err.lineNumber);
     };
   </script>
-  <script src="wsproxy.js"></script>
-  <script src="client.js"></script>
-  <script src="remote.js"></script>
-  <script src="demo.js"></script>
+
+  <script defer src="wsproxy.js"></script>
+  <script defer src="client.js"></script>
+  <script defer src="remote.js"></script>
+  <script defer src="demo.js"></script>
+
+  <script>
+    (() => {
+      for (const el of document.getElementsByTagName('script')) {
+        if (!el.hasAttribute('src')) {
+          continue;
+        }
+
+        console.debug(`setting onerror for <script>: ${el.src}`);
+        el.onerror = () => {
+          const src = el.src;
+          const message = `Script failed to load: ${el.src}`;
+          alert(message);
+          console.error(message);
+        };
+      }
+    })();
+  </script>
 </body>
 
 </html>
