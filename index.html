@@ -168,11 +168,20 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
     window.onerror = function (err) {
       alert('error: ' + JSON.stringify(err) + '\n' + err.fileName + ' ' + err.lineNumber);
     };
+
+    function onScriptLoadError(scriptName) {
+      console.error(`Error loading script ${scriptName}`);
+      alert(
+        `Failed to load script: ${scriptName}\n\n` +
+        'Make sure it is present in the same directory as this HTML file.\n' +
+        'Do not try to run this from an archive without extracting it.'
+      );
+    }
   </script>
-  <script src="wsproxy.js"></script>
-  <script src="client.js"></script>
-  <script src="remote.js"></script>
-  <script src="demo.js"></script>
+  <script src="wsproxy.js" onerror="onScriptLoadError('wsproxy.js')"></script>
+  <script src="client.js" onerror="onScriptLoadError('client.js')"></script>
+  <script src="remote.js" onerror="onScriptLoadError('remote.js')"></script>
+  <script src="demo.js" onerror="onScriptLoadError('demo.js')"></script>
 </body>
 
 </html>
