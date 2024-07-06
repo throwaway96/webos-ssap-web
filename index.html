@@ -133,25 +133,38 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
     <div id="custom_request">
     <p>request</p>
     <select id="reqs">
-      <option value="launch_factorywin_instart"
+      <option value="launch_instart_factorywin"
         data-endpoint="ssap://com.webos.applicationManager/launch"
         data-payload="{&quot;id&quot;:&quot;com.webos.app.factorywin&quot;,&quot;params&quot;:{&quot;id&quot;:&quot;executeFactory&quot;,&quot;irKey&quot;:&quot;inStart&quot;}}">
-        launch factorywin (inStart)</option>
-      <option value="launch_factorywin_ezadjust"
+        open inStart (webOS 3.0+)</option>
+      <option value="launch_ezadjust_factorywin"
         data-endpoint="ssap://com.webos.applicationManager/launch"
         data-payload="{&quot;id&quot;:&quot;com.webos.app.factorywin&quot;,&quot;params&quot;:{&quot;id&quot;:&quot;executeFactory&quot;,&quot;irKey&quot;:&quot;ezAdjust&quot;}}">
-        launch factorywin (ezAdjust)</option>
-        <option value="launch_softwareupdate_expert"
+        open ezAdjust (webOS 3.0+)</option>
+        <option value="launch_instart_livetv"
+        data-endpoint="ssap://com.webos.applicationManager/launch"
+        data-payload="{&quot;id&quot;:&quot;com.webos.app.livetv&quot;,&quot;params&quot;:{&quot;id&quot;:&quot;executeFactory&quot;,&quot;irKey&quot;:&quot;inStart&quot;}}">
+        open inStart (webOS 1.x/2.x)</option>
+      <option value="launch_ezadjust_livetv"
+        data-endpoint="ssap://com.webos.applicationManager/launch"
+        data-payload="{&quot;id&quot;:&quot;com.webos.app.livetv&quot;,&quot;params&quot;:{&quot;id&quot;:&quot;executeFactory&quot;,&quot;irKey&quot;:&quot;ezAdjust&quot;}}">
+        open ezAdjust (webOS 1.x/2.x)</option>
+      <option value="launch_softwareupdate_expert"
         data-endpoint="ssap://com.webos.applicationManager/launch"
         data-payload="{&quot;id&quot;:&quot;com.webos.app.softwareupdate&quot;,&quot;params&quot;:{&quot;mode&quot;:&quot;expert&quot;,&quot;flagUpdate&quot;:true}}">
         launch softwareupdate (expert mode)</option>
-        <option value="get_version_info"
-        data-endpoint="ssap://com.webos.service.update/getCurrentSWInformation" 
+      <option value="get_version_info"
+        data-endpoint="ssap://com.webos.service.update/getCurrentSWInformation"
         data-payload="{}">
         get version info</option>
+      <option value="private_reboot"
+        data-private
+        data-endpoint="luna://com.webos.service.sleep/shutdown/machineReboot"
+        data-payload="{&quot;reason&quot;:&quot;remoteKey&quot;}">
+        reboot via createAlert</option>
       <option value="custom">custom</option>
-      <option value="private">private bus via createAlert</option>
     </select><br>
+    <label for="req_private">private bus via <tt>/createAlert</tt>:</label><input type="checkbox" id="req_private" disabled><br>
     <label for="req_uri">URI:</label>&nbsp;<input type="text" id="req_uri" size="100" placeholder="luna://..." disabled><br>
     <label for="req_payload">payload:</label><br>
     <textarea id="req_payload" rows="5" cols="100" placeholder="{}" disabled>{}</textarea><br>

@@ -176,22 +176,27 @@ async function waitForPreviewEnable() {
 const reqList = document.getElementById('reqs');
 const reqSend = document.getElementById('req_send');
 const reqUri = document.getElementById('req_uri');
+const reqPrivate = document.getElementById('req_private');
 const reqPayload = document.getElementById('req_payload');
 const respStatus = document.getElementById('resp_status');
 const respPayload = document.getElementById('resp_payload');
 
 function reqListHandler(evt) {
-  let sel = reqList.options[reqList.selectedIndex];
-  if ((sel.value === 'custom') || (sel.value === 'private')) {
-    reqUri.disabled = false;
-    reqPayload.disabled = false;
-  } else {
-    reqUri.disabled = true;
-    reqPayload.disabled = true;
+  const sel = reqList.options[reqList.selectedIndex];
 
+  let disableEdit = true;
+
+  if (sel.value === 'custom') {
+    disableEdit = false;
+  } else {
     reqUri.value = sel.dataset['endpoint'];
     reqPayload.value = sel.dataset['payload'];
+    reqPrivate.checked = (sel.dataset['private'] !== undefined);
   }
+
+  reqUri.disabled = disableEdit;
+  reqPayload.disabled = disableEdit;
+  reqPrivate.disabled = disableEdit;
 }
 
 reqList.addEventListener('change', reqListHandler);
@@ -343,9 +348,7 @@ reqSend.addEventListener('click', (evt) => {
   const uri = reqUri.value;
   const payload = JSON.parse(reqPayload.value);
 
-  let sel = reqList.options[reqList.selectedIndex];
-
-  if (sel.value === 'private') {
+  if (reqPrivate.checked) {
     sendPrivateRequest(uri, payload);
   } else {
     sendRequest(uri, payload);
